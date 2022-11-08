@@ -1,9 +1,12 @@
+#pragma newdecls required
+
 #include <sourcemod>
 #include <cstrike>
 #include <zombiereloaded>
 
-new bool:G_bIsHuman[MAXPLAYERS+1];
-new bool:G_bIsZombie[MAXPLAYERS+1];
+bool 	
+	G_bIsHuman[MAXPLAYERS + 1],
+ 	G_bIsZombie[MAXPLAYERS + 1];
 
 //----------------------------------------------------------------------------------------------------
 // Purpose:
@@ -13,14 +16,14 @@ public Plugin myinfo =
 	name        = "MVP Stars",
 	author      = "zaCade",
 	description = "Adds a star in the scoreboard to the humans that won the round",
-	version     = "1.0",
+	version     = "1.1",
 	url         = ""
-};
+}
 
 //----------------------------------------------------------------------------------------------------
 // Purpose:
 //----------------------------------------------------------------------------------------------------
-public OnPluginStart()
+public void OnPluginStart()
 {
 	HookEvent("round_start", Event_RoundStart);
 	HookEvent("round_end", Event_RoundEnd);
@@ -29,7 +32,7 @@ public OnPluginStart()
 //----------------------------------------------------------------------------------------------------
 // Purpose:
 //----------------------------------------------------------------------------------------------------
-public ZR_OnClientInfected(client, attacker, bool:motherinfect, bool:respawnoverride, bool:respawn)
+public void ZR_OnClientInfected(int client, int attacker, bool motherinfect, bool respawnoverride, bool respawn)
 {
 	G_bIsHuman[client] = false;
 	G_bIsZombie[client] = true;
@@ -38,7 +41,7 @@ public ZR_OnClientInfected(client, attacker, bool:motherinfect, bool:respawnover
 //----------------------------------------------------------------------------------------------------
 // Purpose:
 //----------------------------------------------------------------------------------------------------
-public ZR_OnClientHumanPost(client, bool:respawn, bool:protect)
+public void ZR_OnClientHumanPost(int client, bool respawn, bool protect)
 {
 	G_bIsHuman[client] = true;
 	G_bIsZombie[client] = false;
@@ -47,9 +50,9 @@ public ZR_OnClientHumanPost(client, bool:respawn, bool:protect)
 //----------------------------------------------------------------------------------------------------
 // Purpose:
 //----------------------------------------------------------------------------------------------------
-public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	for (new client = 1; client <= MaxClients; client++)
+	for (int client = 1; client <= MaxClients; client++)
 	{
 		G_bIsHuman[client] = true;
 		G_bIsZombie[client] = false;
@@ -59,20 +62,18 @@ public Action:Event_RoundStart(Handle:event, const String:name[], bool:dontBroad
 //----------------------------------------------------------------------------------------------------
 // Purpose:
 //----------------------------------------------------------------------------------------------------
-public Action:Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
-	switch(GetEventInt(event, "winner"))
-	{
-		case(CS_TEAM_CT): CreateTimer(0.2, OnHumansWin, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
-	}
+	if(event.GetInt("winner") == CS_TEAM_CT)
+		CreateTimer(0.2, OnHumansWin, _, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 //----------------------------------------------------------------------------------------------------
 // Purpose:
 //----------------------------------------------------------------------------------------------------
-public Action:OnHumansWin(Handle:timer)
+public Action OnHumansWin(Handle timer)
 {
-	for (new client = 1; client <= MaxClients; client++)
+	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client) && IsPlayerAlive(client) && !IsClientObserver(client) && !IsFakeClient(client))
 		{
@@ -82,4 +83,6 @@ public Action:OnHumansWin(Handle:timer)
 			}
 		}
 	}
+	
+	return Plugin_Continue;
 }
