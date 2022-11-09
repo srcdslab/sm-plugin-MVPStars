@@ -2,6 +2,7 @@
 
 #include <sourcemod>
 #include <cstrike>
+
 #include <zombiereloaded>
 
 bool 	
@@ -16,7 +17,7 @@ public Plugin myinfo =
 	name        = "MVP Stars",
 	author      = "zaCade",
 	description = "Adds a star in the scoreboard to the humans that won the round",
-	version     = "1.1",
+	version     = "1.1.0",
 	url         = ""
 }
 
