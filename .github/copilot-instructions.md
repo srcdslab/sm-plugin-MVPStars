@@ -15,7 +15,7 @@ This repository contains the **MVPStars** plugin for SourceMod, specifically des
 - **Language**: SourcePawn (latest syntax with `#pragma newdecls required`)
 - **Platform**: SourceMod 1.11.0+ (currently using 1.11.0-git6917)
 - **Game Engine**: Source Engine (Counter-Strike: Source/Global Offensive)
-- **Build System**: SourceKnight 0.1 (not direct spcomp compilation)
+- **Build System**: Native GitHub Actions workflow using `spcomp` directly
 
 ### Dependencies
 - **SourceMod**: 1.11.0-git6917 (minimum 1.11.0)
@@ -31,7 +31,6 @@ This repository contains the **MVPStars** plugin for SourceMod, specifically des
 │   └── copilot-instructions.md   # This file
 ├── addons/sourcemod/scripting/
 │   └── MVPStars.sp              # Main plugin source code
-├── sourceknight.yaml           # Build configuration
 └── .gitignore                  # Git ignore rules
 ```
 
@@ -42,30 +41,18 @@ This repository contains the **MVPStars** plugin for SourceMod, specifically des
 
 ## Build & Development Process
 
-### Build System: SourceKnight
-This project uses **SourceKnight** instead of direct spcomp compilation:
-
-```yaml
-# sourceknight.yaml configuration
-project:
-  sourceknight: 0.1
-  name: MVPStars
-  dependencies:
-    - sourcemod (1.11.0-git6917)
-    - zombiereloaded (include files)
-  targets:
-    - MVPStars
-```
+### Build System: Native GitHub Actions
+This project compiles directly with `spcomp` via `rumblefrog/setup-sp` in `.github/workflows/ci.yml`, cloning the `zombiereloaded` include files as a build step instead of using a dependency manager.
 
 ### Development Workflow
 1. **Local Development**: Modify `.sp` files in `addons/sourcemod/scripting/`
-2. **Build**: Use SourceKnight commands (handled by CI)
+2. **Build**: `spcomp` compiles the plugin (handled by CI)
 3. **Testing**: Deploy to development server with SourceMod + ZR
 4. **CI/CD**: Automatic build, test, and release via GitHub Actions
 
 ### CI/CD Pipeline
 - **Trigger**: Push, PR, or manual dispatch
-- **Build**: SourceKnight compilation via `maxime1907/action-sourceknight@v1`
+- **Build**: Direct `spcomp` compilation via `rumblefrog/setup-sp`
 - **Package**: Creates deployment-ready package
 - **Release**: Automatic tagging and release on main/master branch
 
@@ -205,7 +192,7 @@ mp_roundtime 0.1
 1. **MVP Not Awarded**: Check client validation and team states
 2. **State Sync Issues**: Verify ZR event handling and timing
 3. **Memory Leaks**: Ensure proper handle cleanup
-4. **Build Failures**: Check SourceKnight configuration and dependencies
+4. **Build Failures**: Check the GitHub Actions workflow configuration and dependencies
 
 ### Debug Techniques
 ```sourcepawn
